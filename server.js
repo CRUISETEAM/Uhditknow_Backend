@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const cors = require('cors')
 require('dotenv').config()
 const PORT = process.env.PORT
 const sequelize = require('./config/db') // Sequelize 설정 가져오기
@@ -7,6 +8,14 @@ const LookingFor = require('./models/LookingFor') // Model 가져오기
 const Got = require('./models/Got')
 
 app.use(express.json()) // 미들웨어
+app.use(
+	cors({
+		origin: process.env.CORS_ORIGIN,
+		credentials: true,
+		withCredentials: true,
+		optionsSuccessStatus: 200,
+	})
+);
 
 sequelize.sync().then(() => {
     console.log('모델이 동기화되었습니다.')
