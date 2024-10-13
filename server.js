@@ -7,6 +7,11 @@ const sequelize = require('./config/db') // Sequelize 설정 가져오기
 const LookingFor = require('./models/LookingFor') // Model 가져오기
 const Got = require('./models/Got')
 
+const clientId = process.env.CLIENT_ID; // 클라이언트 ID
+const clientSecret = process.env.CLIENT_SECRET; // 클라이언트 시크릿
+const { BsmOauth } = require('bsm-oauth');
+const bsmOauth = new BsmOauth(clientId, clientSecret);
+
 app.use(express.json()) // 미들웨어
 app.use(
 	cors({
@@ -14,7 +19,7 @@ app.use(
 		credentials: true,
 		withCredentials: true,
 		optionsSuccessStatus: 200,
-	})
+	}) 
 );
 
 sequelize.sync().then(() => {
@@ -140,3 +145,12 @@ app.post('/got/add', async (req, res) => {
         res.status(500).json({ error: '서버 오류. 데이터를 추가할 수 없습니다.' });
     }
 })
+
+app.get('/oauth', async (req, res) => {
+    const authCode = req.query.code;
+  
+    const token = await bsmOauth.getToken(authCode); // 임시 인증코드를 유저 토큰으로 교환
+    const resource = await bsmOauth.getResource(token); // 토큰으로 유저의 정보를 가져옴
+  
+    console.log(resource);
+});
