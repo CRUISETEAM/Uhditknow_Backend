@@ -6,6 +6,7 @@ const PORT = process.env.PORT
 const sequelize = require('./config/db') // Sequelize 설정 가져오기
 const LookingFor = require('./models/LookingFor') // Model 가져오기
 const Got = require('./models/Got')
+const User = require('./models/User')
 
 const clientId = process.env.CLIENT_ID; // 클라이언트 ID
 const clientSecret = process.env.CLIENT_SECRET; // 클라이언트 시크릿
