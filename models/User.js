@@ -40,4 +40,12 @@ const User = sequelize.define('User', {
   timestamps: false // createdAt, updatedAt 사용 여부
 });
 
+//findByUserCode
+User.findByUserCode = async function(userCode){
+  return await this.findOne({
+    where: { usercode: userCode },
+    raw: true
+  });
+};
+
 module.exports = User;
