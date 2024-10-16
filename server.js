@@ -152,6 +152,27 @@ app.get('/oauth', async (req, res) => {
   
     const token = await bsmOauth.getToken(authCode); // 임시 인증코드를 유저 토큰으로 교환
     const resource = await bsmOauth.getResource(token); // 토큰으로 유저의 정보를 가져옴
-  
-    console.log(resource);
+    const doorpermission = false;
+    const data = await User.findByUserCode(resource.userCode)
+    if (data) {
+        console.log('User found:', data);
+        
+    } else {
+        console.log('User not found');
+        const newUser = await User.create({
+            usercode: resource.userCode,
+            email: resource.email,
+            role: resource.role,
+            name: resource.student.name,
+            grade: resource.student.grade,
+            classno: resource.student.classNo,
+            studentno: resource.student.studentNo,
+            doorpermission: doorpermission,
+        })
+
+        res.status(201).json({
+            message: '새 데이터가 성공적으로 추가되었습니다.',
+            data: newUser
+        })
+    }
 });
