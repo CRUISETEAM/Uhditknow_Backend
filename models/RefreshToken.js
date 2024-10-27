@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
-//refreshtoken
+//refreshtoken 테이블에 대한 모델 정의
 const refreshToken = sequelize.define('RefreshToken', {
     id: {
         type: DataTypes.INTEGER,
@@ -28,7 +28,7 @@ const refreshToken = sequelize.define('RefreshToken', {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
     },
-      revoked: {
+    revoked: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     }
