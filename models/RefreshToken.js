@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
 //refreshtoken 테이블에 대한 모델 정의
-const refreshToken = sequelize.define('RefreshToken', {
+const RefreshToken = sequelize.define('RefreshToken', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -12,8 +12,8 @@ const refreshToken = sequelize.define('RefreshToken', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: 'User',
-          key: 'usercode'
+            model: 'user',
+            key: 'usercode'
         }
     },
     refreshtoken: {
