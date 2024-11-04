@@ -38,4 +38,15 @@ const generateRefreshToken = async (user) => {
     return refreshToken
 }
 
-module.exports = { generateAccessToken, generateRefreshToken }
+// 토큰 발급
+const issueTokens = async (user) => {
+    const accessToken = await generateAccessToken(user)
+    const refreshToken = await generateRefreshToken(user)
+  
+    return {
+        accessToken: accessToken,
+        refreshToken: refreshToken
+    }
+}
+
+module.exports = { generateAccessToken, generateRefreshToken, issueTokens }
