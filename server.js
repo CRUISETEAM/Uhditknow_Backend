@@ -7,6 +7,7 @@ const sequelize = require('./config/db') // Sequelize 설정 가져오기
 const LookingFor = require('./models/LookingFor') // Model 가져오기
 const Got = require('./models/Got')
 const User = require('./models/User')
+const JWT = require('./tokens/jwt')
 
 const clientId = process.env.CLIENT_ID; // 클라이언트 ID
 const clientSecret = process.env.CLIENT_SECRET; // 클라이언트 시크릿
@@ -21,7 +22,7 @@ app.use(
 		withCredentials: true,
 		optionsSuccessStatus: 200,
 	}) 
-);
+)
 
 sequelize.sync().then(() => {
     console.log('모델이 동기화되었습니다.')
@@ -149,17 +150,15 @@ app.post('/got/add', async (req, res) => {
 
 app.get('/oauth', async (req, res) => {
     const authCode = req.query.code;
-  
     const token = await bsmOauth.getToken(authCode); // 임시 인증코드를 유저 토큰으로 교환
     const resource = await bsmOauth.getResource(token); // 토큰으로 유저의 정보를 가져옴
     const doorpermission = false;
     const data = await User.findByUserCode(resource.userCode)
     if (data) {
         console.log('User found:', data);
-        
     } else {
         console.log('User not found');
-        const newUser = await User.create({
+        await User.create({
             usercode: resource.userCode,
             email: resource.email,
             role: resource.role,
@@ -169,10 +168,13 @@ app.get('/oauth', async (req, res) => {
             studentno: resource.student.studentNo,
             doorpermission: doorpermission,
         })
-
-        res.status(201).json({
-            message: '새 데이터가 성공적으로 추가되었습니다.',
-            data: newUser
-        })
     }
-});
+    const AccessToken = await JWT.generateAccessToken(data)
+    const RefreshToken = await JWT.generateRefreshToken(data)
+    console.log(AccessToken)
+    console.log(RefreshToken)
+    res.json({
+        AccessToken,
+        RefreshToken
+    })
+})
