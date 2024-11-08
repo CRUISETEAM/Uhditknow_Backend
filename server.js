@@ -8,6 +8,7 @@ const LookingFor = require('./models/LookingFor') // Model 가져오기
 const Got = require('./models/Got')
 const User = require('./models/User')
 const JWT = require('./tokens/jwt')
+const authenticateToken = require('./middlewares/authMiddleware')
 
 const clientId = process.env.CLIENT_ID; // 클라이언트 ID
 const clientSecret = process.env.CLIENT_SECRET; // 클라이언트 시크릿
@@ -34,7 +35,7 @@ app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`)
 })
 
-app.get('/lookingfor', async (req, res) => {
+app.get('/lookingfor', authenticateToken, async (req, res) => {
     try {
         // looking_for 테이블의 모든 데이터를 조회
         const data = await LookingFor.findAll({raw: true});
@@ -46,7 +47,7 @@ app.get('/lookingfor', async (req, res) => {
     }
 })
 
-app.get('/got', async (req, res) => {
+app.get('/got', authenticateToken, async (req, res) => {
     try {
         // got 테이블의 모든 데이터를 조회
         const data = await Got.findAll({raw: true});
@@ -58,7 +59,7 @@ app.get('/got', async (req, res) => {
     }
 })
 
-app.get('/lookingfor/:id', async (req, res) => {
+app.get('/lookingfor/:id', authenticateToken, async (req, res) => {
     try {
         // looking_for 테이블의 id를 통해 세부조회
         const data = await LookingFor.findAll({
@@ -75,7 +76,7 @@ app.get('/lookingfor/:id', async (req, res) => {
     }
 })
 
-app.get('/got/:id', async (req, res) => {
+app.get('/got/:id', authenticateToken, async (req, res) => {
     try {
         // got 테이블의 id를 통해 세부조회
         const data = await Got.findAll({
@@ -92,7 +93,7 @@ app.get('/got/:id', async (req, res) => {
     }
 })
 
-app.post('/lookingfor/add', async (req, res) => {
+app.post('/lookingfor/add', authenticateToken, async (req, res) => {
     try {
         // 요청 본문에서 데이터 가져오기
         const { title, location, detail } = req.body;
@@ -120,7 +121,7 @@ app.post('/lookingfor/add', async (req, res) => {
     }
 })
 
-app.post('/got/add', async (req, res) => {
+app.post('/got/add', authenticateToken, async (req, res) => {
     try {
         // 요청 본문에서 데이터 가져오기
         const { title, location, time, detail } = req.body;
