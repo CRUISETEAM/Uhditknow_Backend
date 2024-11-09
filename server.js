@@ -150,32 +150,38 @@ app.post('/got/add', authenticateToken, async (req, res) => {
 })
 
 app.get('/oauth', async (req, res) => {
-    const authCode = req.query.code;
-    const token = await bsmOauth.getToken(authCode); // 임시 인증코드를 유저 토큰으로 교환
-    const resource = await bsmOauth.getResource(token); // 토큰으로 유저의 정보를 가져옴
-    const doorpermission = false;
-    const data = await User.findByUserCode(resource.userCode)
-    if (data) {
-        console.log('User found:', data);
-    } else {
-        console.log('User not found');
-        await User.create({
-            usercode: resource.userCode,
-            email: resource.email,
-            role: resource.role,
-            name: resource.student.name,
-            grade: resource.student.grade,
-            classno: resource.student.classNo,
-            studentno: resource.student.studentNo,
-            doorpermission: doorpermission,
+    try {
+        const authCode = req.query.code;
+        const token = await bsmOauth.getToken(authCode); // 임시 인증코드를 유저 토큰으로 교환
+        const resource = await bsmOauth.getResource(token); // 토큰으로 유저의 정보를 가져옴
+        const doorpermission = false;
+        const data = await User.findByUserCode(resource.userCode)
+        if (data) {
+            console.log('User found:', data);
+        } else {
+            console.log('User not found');
+            await User.create({
+                usercode: resource.userCode,
+                email: resource.email,
+                role: resource.role,
+                name: resource.student.name,
+                grade: resource.student.grade,
+                classno: resource.student.classNo,
+                studentno: resource.student.studentNo,
+                doorpermission: doorpermission,
+            })
+        }
+        const AccessToken = await JWT.generateAccessToken(data)
+        const RefreshToken = await JWT.generateRefreshToken(data)
+        console.log(AccessToken)
+        console.log(RefreshToken)
+        res.json({
+            AccessToken,
+            RefreshToken
         })
+    } catch (err) {
+        console.error('OAuth 처리 중 오류 발생:', err)
+        res.status(500).send('서버 오류가 발생했습니다.')
     }
-    const AccessToken = await JWT.generateAccessToken(data)
-    const RefreshToken = await JWT.generateRefreshToken(data)
-    console.log(AccessToken)
-    console.log(RefreshToken)
-    res.json({
-        AccessToken,
-        RefreshToken
-    })
+    
 })
