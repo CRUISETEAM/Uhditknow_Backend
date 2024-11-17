@@ -12,7 +12,7 @@ const REFRESH_TOKEN_EXPIRATION = process.env.REFRESH_TOKEN_EXPIRATION
 const generateAccessToken = async (user) => {
     const userData = await User.findByUserCode(user.usercode)
     return jwt.sign(
-        { usercode: user.usercode, email: userData.email, role: userData.role }, // 포함할 정보
+        { usercode: user.usercode, email: userData.email, role: userData.role, name: userData.name }, // 포함할 정보
         JWT_SECRET, // 시크릿
         { expiresIn: ACCESS_TOKEN_EXPIRATION } // 만료 시간
     )
