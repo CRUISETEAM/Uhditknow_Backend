@@ -8,6 +8,10 @@ const Got = sequelize.define('Got', {
     primaryKey: true,
     autoIncrement: true
   },
+  writer: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
   title: {
     type: DataTypes.STRING,
     allowNull: false
