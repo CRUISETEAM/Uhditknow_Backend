@@ -8,6 +8,10 @@ const LookingFor = sequelize.define('LookingFor', {
     primaryKey: true,
     autoIncrement: true
   },
+  writer: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
   title: {
     type: DataTypes.STRING,
     allowNull: false
