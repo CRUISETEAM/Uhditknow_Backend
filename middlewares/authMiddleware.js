@@ -31,7 +31,7 @@ const authenticateToken = async (req, res, next) => {
                 return res.sendStatus(403) // 토큰이 유효하지 않으면 403 Forbidden 응답
             }
         } else {
-            req.user = user
+            req.user = user.name
             next()
         }
     })
