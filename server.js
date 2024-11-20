@@ -95,7 +95,7 @@ app.get('/got/:id', authenticateToken, async (req, res) => {
 
 app.post('/lookingfor/add', authenticateToken, async (req, res) => {
     try {
-        // 요청 본문에서 데이터 가져오기
+        const writer = req.user;
         const { title, location, detail } = req.body;
 
         // 요청 데이터가 올바르게 입력되었는지 확인
@@ -105,6 +105,7 @@ app.post('/lookingfor/add', authenticateToken, async (req, res) => {
 
         // 데이터베이스에 새 레코드 생성
         const newLookingFor = await LookingFor.create({
+            writer: writer,
             title: title,
             location: location,
             detail: detail
@@ -123,16 +124,16 @@ app.post('/lookingfor/add', authenticateToken, async (req, res) => {
 
 app.post('/got/add', authenticateToken, async (req, res) => {
     try {
-        // 요청 본문에서 데이터 가져오기
+        const writer = req.user;
         const { title, location, time, detail } = req.body;
 
         // 요청 데이터가 올바르게 입력되었는지 확인
         if (!title) {
             return res.status(400).json({ error: 'title 필드는 필수입니다.' });
         }
-
         // 데이터베이스에 새 레코드 생성
         const newGot = await Got.create({
+            writer: writer,
             title: title,
             location: location,
             time: time,
