@@ -76,6 +76,33 @@ app.get('/lookingfor/:id', authenticateToken, async (req, res) => {
     }
 })
 
+app.put('/got/:id/mine', authenticateToken, async (req, res) => {
+    try {
+        const name = req.user
+        const user = await User.findOne({
+            where: {
+                name: name
+            }
+        })
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' })
+        }
+
+        if (user.doorpermission) {
+            return res.status(200).json({ message: '문 권한이 이미 있습니다.' })
+        }
+
+        user.doorpermission = true
+        await user.save()
+
+        return res.status(200).json({ message: '문 권한이 성공적으로 업데이트되었습니다.' })
+    } catch (err) {
+        console.error('문 권한 업데이트 오류:', err)
+        return res.status(500).json({ message: '서버 오류' })
+    }
+})
+
 app.get('/got/:id', authenticateToken, async (req, res) => {
     try {
         // got 테이블의 id를 통해 세부조회
