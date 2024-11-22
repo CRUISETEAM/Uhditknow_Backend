@@ -10,6 +10,29 @@ const User = require('./models/User')
 const JWT = require('./tokens/jwt')
 const authenticateToken = require('./middlewares/authMiddleware')
 
+const { S3Client } = require('@aws-sdk/client-s3')
+const multer = require('multer')
+const multerS3 = require('multer-s3')
+const s3 = new S3Client({
+    region : 'ap-northeast-2',
+    credentials : {
+        accessKeyId : process.env.ACCESS_KEY_ID,
+        secretAccessKey : process.env.SECRET_ACCESS_KEY
+    }
+})
+
+const upload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: process.env.BUCKET,
+        contentType: multerS3.AUTO_CONTENT_TYPE,
+        key: function (req, file, cb) {
+            cb(null, Date.now().toString())
+        },
+    }),
+    limits: { fileSize: 5 * 1024 * 1024 },
+})
+
 const clientId = process.env.CLIENT_ID; // 클라이언트 ID
 const clientSecret = process.env.CLIENT_SECRET; // 클라이언트 시크릿
 const { BsmOauth } = require('bsm-oauth');
