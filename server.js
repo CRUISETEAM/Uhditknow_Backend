@@ -172,7 +172,7 @@ app.post('/lookingfor/add', authenticateToken, async (req, res) => {
     }
 })
 
-app.post('/got/add', authenticateToken, async (req, res) => {
+app.post('/got/add', authenticateToken, upload.single('img1'), async (req, res) => {
     try {
         const writer = req.user;
         const { title, location, time, detail } = req.body;
@@ -187,7 +187,8 @@ app.post('/got/add', authenticateToken, async (req, res) => {
             title: title,
             location: location,
             time: time,
-            detail: detail
+            detail: detail,
+            img: req.file.location
         })
         // 생성된 레코드를 클라이언트에게 응답으로 보내기
         res.status(201).json({
