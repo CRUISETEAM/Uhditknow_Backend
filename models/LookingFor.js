@@ -24,6 +24,10 @@ const LookingFor = sequelize.define('LookingFor', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  img: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
 }, {
   tableName: 'looking_for',
   timestamps: false // createdAt, updatedAt 사용 여부
