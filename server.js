@@ -107,6 +107,12 @@ app.put('/got/:id/mine', authenticateToken, async (req, res) => {
                 name: name
             }
         })
+        const got = await Got.findOne({
+            where: {
+                id: req.params.id,
+            }
+        })
+        console.log(got)
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' })
@@ -118,6 +124,9 @@ app.put('/got/:id/mine', authenticateToken, async (req, res) => {
 
         user.doorpermission = true
         await user.save()
+
+        got.recipient = name
+        await got.save()
 
         return res.status(200).json({ message: '문 권한이 성공적으로 업데이트되었습니다.' })
     } catch (err) {

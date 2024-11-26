@@ -32,6 +32,10 @@ const Got = sequelize.define('Got', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  recipient: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
 }, {
   tableName: 'got',
   timestamps: false // createdAt, updatedAt 사용 여부
