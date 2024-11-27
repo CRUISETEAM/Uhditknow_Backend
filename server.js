@@ -7,6 +7,7 @@ const sequelize = require('./config/db') // Sequelize 설정 가져오기
 const LookingFor = require('./models/LookingFor') // Model 가져오기
 const Got = require('./models/Got')
 const User = require('./models/User')
+const Comment = require('./models/Comment')
 const JWT = require('./tokens/jwt')
 const authenticateToken = require('./middlewares/authMiddleware')
 
@@ -92,7 +93,16 @@ app.get('/lookingfor/:id', authenticateToken, async (req, res) => {
             raw: true
         })
         console.log(data)
-        res.json(data)
+        const comments = await Comment.findAll({
+            where: {
+                lookingforid: req.params.id
+            },
+            raw: true
+        })
+        res.json({
+            data,
+            comments
+        })
     } catch (err) {
         console.error('쿼리 실행 오류:', err)
         res.status(500).send('서버 오류')
@@ -200,10 +210,54 @@ app.post('/got/add', authenticateToken, upload.single('img1'), async (req, res) 
             detail: detail,
             img: req.file.location
         })
+
+        const user = await User.findOne({
+            where: {
+                name: writer
+            }
+        })
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' })
+        }
+
+        if (user.doorpermission) {
+            return res.status(200).json({ message: '문 권한이 이미 있습니다.' })
+        }
+
+        user.doorpermission = true
+        await user.save()
+
         // 생성된 레코드를 클라이언트에게 응답으로 보내기
         res.status(201).json({
             message: '새 데이터가 성공적으로 추가되었습니다.',
             data: newGot
+        })
+    } catch (err) {
+        console.error('데이터 추가 오류:', err);
+        res.status(500).json({ error: '서버 오류. 데이터를 추가할 수 없습니다.' });
+    }
+})
+
+app.post('/lookingfor/:id/comment', authenticateToken, async (req, res) => {
+    try {
+        const writer = req.user
+        const { content } = req.body
+        const lookingforid = req.params.id
+
+        if (!content) {
+            return res.status(400).json({ error: '내용을 입력해주세요.' })
+        }
+
+        const newComment = await Comment.create({
+            writer: writer,
+            content: content,
+            lookingforid: lookingforid
+        })
+
+        res.status(201).json({
+            message: '새 데이터가 성공적으로 추가되었습니다.',
+            data: newComment
         })
     } catch (err) {
         console.error('데이터 추가 오류:', err);
